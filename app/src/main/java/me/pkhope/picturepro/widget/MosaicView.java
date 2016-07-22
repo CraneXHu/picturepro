@@ -23,6 +23,7 @@ public class MosaicView extends View {
 
     private Bitmap sourceBitmap;
     private Bitmap mosavicBitmap;
+    private Bitmap pathBitmap;
     private Path mosaicPath;
     private Rect imageRegion;
 
@@ -67,6 +68,10 @@ public class MosaicView extends View {
     }
 
     protected void drawPath(){
+
+        pathBitmap = Bitmap.createBitmap(bitmapWidth,bitmapHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(pathBitmap);
+        canvas.drawBitmap(mosavicBitmap,0,0,null);
         Bitmap bitmap = Bitmap.createBitmap(bitmapWidth,bitmapHeight, Bitmap.Config.ARGB_8888);
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
@@ -76,9 +81,9 @@ public class MosaicView extends View {
         paint.setPathEffect(new CornerPathEffect(10.f));
         paint.setColor(Color.WHITE);
         paint.setStrokeWidth(pathWidth);
-        Canvas canvas = new Canvas(bitmap);
+        canvas.setBitmap(bitmap);
         canvas.drawPath(mosaicPath,paint);
-        canvas.setBitmap(mosavicBitmap);
+        canvas.setBitmap(pathBitmap);
         paint.reset();
         paint.setAntiAlias(true);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
@@ -86,6 +91,7 @@ public class MosaicView extends View {
         paint.setXfermode(null);
         canvas.save();
         bitmap.recycle();
+        pathBitmap.recycle();
     }
 
     @Override
@@ -142,6 +148,7 @@ public class MosaicView extends View {
                 lastY = -1;
                 break;
         }
+        drawPath();
         invalidate();
         return true;
     }
@@ -185,6 +192,7 @@ public class MosaicView extends View {
             bitmapWidth = sourceBitmap.getWidth();
             bitmapHeight = sourceBitmap.getHeight();
 
+            createMosaicBitmap();
         } else {
             bitmapWidth = 0;
             bitmapHeight = 0;
