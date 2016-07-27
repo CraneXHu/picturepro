@@ -16,6 +16,8 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
+import me.pkhope.picturepro.R;
+
 /**
  * Created by pkhope on 2016/7/15.
  */
@@ -48,8 +50,8 @@ public class MosaicView extends View {
         super(context, attrs);
         mosaicPath = new Path();
         imageRegion = new Rect();
-        pathWidth = 16;
-        gridSize = 9;
+        pathWidth = dp2px(16*2);
+        gridSize = dp2px(9*2);
         imagePadding = dp2px(8);
         lastX = -1;
         lastY = -1;
@@ -62,14 +64,13 @@ public class MosaicView extends View {
         if (sourceBitmap != null){
             canvas.drawBitmap(sourceBitmap,null,imageRegion,null);
         }
-        if (mosavicBitmap != null){
-            canvas.drawBitmap(mosavicBitmap,null,imageRegion,null);
+        if (pathBitmap != null){
+            canvas.drawBitmap(pathBitmap,null,imageRegion,null);
         }
     }
 
     protected void drawPath(){
 
-        pathBitmap = Bitmap.createBitmap(bitmapWidth,bitmapHeight, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(pathBitmap);
         canvas.drawBitmap(mosavicBitmap,0,0,null);
         Bitmap bitmap = Bitmap.createBitmap(bitmapWidth,bitmapHeight, Bitmap.Config.ARGB_8888);
@@ -91,7 +92,6 @@ public class MosaicView extends View {
         paint.setXfermode(null);
         canvas.save();
         bitmap.recycle();
-        pathBitmap.recycle();
     }
 
     @Override
@@ -176,6 +176,7 @@ public class MosaicView extends View {
 
                 Rect rect = new Rect(left,top,right,bottom);
                 int pixel = sourceBitmap.getPixel(left,top);
+                pixel = pixel & 0xFFFFFFFE;
                 paint.setColor(pixel);
                 canvas.drawRect(rect,paint);
             }
@@ -186,12 +187,14 @@ public class MosaicView extends View {
 
     public Bitmap loadBitmap(String path){
 
-        sourceBitmap = BitmapFactory.decodeFile(path);
+        sourceBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.hyi);
+
+//        sourceBitmap = BitmapFactory.decodeFile(path);
 
         if (sourceBitmap != null){
             bitmapWidth = sourceBitmap.getWidth();
             bitmapHeight = sourceBitmap.getHeight();
-
+            pathBitmap = Bitmap.createBitmap(bitmapWidth,bitmapHeight, Bitmap.Config.ARGB_8888);
             createMosaicBitmap();
         } else {
             bitmapWidth = 0;
