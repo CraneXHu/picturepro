@@ -17,6 +17,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import me.pkhope.picturepro.R;
+import me.pkhope.picturepro.utils.BitmapUtils;
+import me.pkhope.picturepro.utils.PicEncryption;
 
 /**
  * Created by pkhope on 2016/7/15.
@@ -80,7 +82,7 @@ public class MosaicView extends View {
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setPathEffect(new CornerPathEffect(10.f));
-        paint.setColor(Color.WHITE);
+        paint.setColor(0xFEFFFFFF);
         paint.setStrokeWidth(pathWidth);
         canvas.setBitmap(bitmap);
         canvas.drawPath(mosaicPath,paint);
@@ -92,11 +94,12 @@ public class MosaicView extends View {
         paint.setXfermode(null);
         canvas.save();
         bitmap.recycle();
+
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
+//        super.onLayout(changed, left, top, right, bottom);
 
         if (bitmapHeight > 0 && bitmapWidth > 0){
             int width = right - left;
@@ -176,7 +179,8 @@ public class MosaicView extends View {
 
                 Rect rect = new Rect(left,top,right,bottom);
                 int pixel = sourceBitmap.getPixel(left,top);
-                pixel = pixel & 0xFFFFFFFE;
+                pixel = pixel & 0xFEFFFFFF;
+//                pixel = pixel & 0x00FFFFFF;
                 paint.setColor(pixel);
                 canvas.drawRect(rect,paint);
             }
@@ -185,11 +189,11 @@ public class MosaicView extends View {
         return mosavicBitmap;
     }
 
-    public Bitmap loadBitmap(String path){
+    public void loadBitmap(String path){
 
         sourceBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.hyi);
 
-//        sourceBitmap = BitmapFactory.decodeFile(path);
+//        sourceBitmap = BitmapUtils.decodeBitmap(path,1080,1920);
 
         if (sourceBitmap != null){
             bitmapWidth = sourceBitmap.getWidth();
@@ -201,7 +205,8 @@ public class MosaicView extends View {
             bitmapHeight = 0;
         }
 
-        return sourceBitmap;
+        requestLayout();
+        invalidate();
     }
 
     public int getPathWidth(){
@@ -222,5 +227,10 @@ public class MosaicView extends View {
 
     protected int dp2px(int dp){
         return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,dp, getContext().getResources().getDisplayMetrics());
+    }
+
+    public void save(String fileName){
+        PicEncryption.save(fileName,sourceBitmap,pathBitmap);
+//        PicEncryption.save(fileName,sourceBitmap,mosavicBitmap);
     }
 }
