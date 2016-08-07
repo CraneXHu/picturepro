@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 public class PicUtils {
 
     static {
-        System.loadLibrary("JniLibNameXM");
+        System.loadLibrary("JniTest");
     }
 
     public native String getOriginalPixels(Bitmap source, Bitmap mosaic);
